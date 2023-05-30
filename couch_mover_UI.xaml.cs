@@ -23,6 +23,7 @@ namespace couch_mover_design
         public couch_mover_UI()
         {
             InitializeComponent();
+            Couch_ComboBox.SelectedIndex = 1;
         }
 
         private void insertCouch_button_Click(object sender, RoutedEventArgs e) { }

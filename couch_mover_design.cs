@@ -36,11 +36,16 @@ namespace VMS.TPS
         window.Content = ui;
         window.Height = 500; window.Width = 400;
         m_context = context;
+
+        if (m_context == null)
+            return;
         
 
         // enable buttons depending on the couch insertion/position
         enableButtons();
     }
+
+    /*****************************ENABLE BUTTONS ON THE UI*****************************************/
 
     private void enableButtons()
     {
@@ -61,18 +66,19 @@ namespace VMS.TPS
             return;
         }
 
-        double distance = couchCoarseDistance();
+        double distance = couchCoarseDistance();        // need to calculate the offset.
         ui.displayDistanceToMove(distance);
-        if (distance*distance > 100)
+        if (distance*distance > 10)
         {
             ui.enableShiftButton();
             return;
         }
 
         ui.enableAcquireButton();
-        couchCollisionCheck();
+        couchCollisionCheck(distance);
     }
-
+    
+    /*****************************COUCH COARSE DISTANCE CALCULATOR*****************************************/
     private static double couchCoarseDistance()
     {
         //TODO: find coarse distance to move
@@ -107,15 +113,16 @@ namespace VMS.TPS
             if(verifyPeaks(out coarseDistance)==1)
             {
                     epoch = 10;
-                    
-                    // TODO: move to fine measurement, store closest_point + distancetomove
+                    MessageBox.Show("Coarse: " + coarseDistance);
+                    peaks.Clear();
+                    return Math.Round(measureFine(closestPoint, coarseDistance), 2);
             }
-
-            return coarseDistance;
+            else
+            {
+                imagePlane += 10;
+            }
         }
-
-
-        return 100;
+        return -100;
     }
     private static List<int> peaks = new List<int>();
     private static void findPeaks(double[] CT_couch_profile)
@@ -154,10 +161,94 @@ namespace VMS.TPS
         return coarseDetection;
     }
 
+    /*****************************COUCH FINE DISTANCE CALCULATOR*****************************************/
 
-        private void couchCollisionCheck()
+    private static double measureFine(VVector initialPoint, double coarseDistance)
     {
-        // TODO: check for distance
+
+        VVector point1 = initialPoint;
+        point1.y += coarseDistance;
+        VVector finalPoint = point1;
+        
+        int epoch = 0;
+        const double stepSize = 0.1;
+        double loss = 1000000;
+        double[] CT_couch_profile_fine = new double[10];
+
+        while(epoch++ < 10)
+        {
+            VVector point2 = point1;
+            point2.y += 15;
+
+            m_context.StructureSet.Image.GetImageProfile(point1, point2, CT_couch_profile_fine);
+            double epochLoss = lossFunction(CT_couch_profile_fine);
+
+            VVector point1_stepped = point1;
+            point1_stepped.y += stepSize;
+            point2.y += stepSize;
+            m_context.StructureSet.Image.GetImageProfile(point1_stepped, point2, CT_couch_profile_fine);
+
+            double epochLoss2 = lossFunction(CT_couch_profile_fine);
+            double gradient = (epochLoss2 - epochLoss) / stepSize;
+
+            double deltaY = -1.0 / (300) * stepSize * gradient;                    // TODO: improve this formula 
+
+            if(epochLoss < loss)
+            {
+                loss = epochLoss;
+                finalPoint = point1;
+            }
+            point1.y += deltaY;
+        }
+        return finalPoint.y - initialPoint.y;
     }
+
+    //TODO: read the reference from a saved CSV file
+    private static int[] reference = new int[] { -520, -673, -815, -836, -840, -840, -837, -801, -628, -500 };
+    private static double lossFunction(double[] profile)
+    {
+        double loss = 0;            
+        for (int i = 0; i < 10; i++)
+        {
+            loss += ((reference[i] - profile[i]) * (reference[i] - profile[i]));
+        }
+        return loss / 10;
+    }
+
+    /*****************************COUCH COLLISION DETECTOR*****************************************/
+
+        private void couchCollisionCheck(double yDistance)
+    {
+            double x = couchInterior.CenterPoint.x;
+            string message = "";
+            message += "X offset: " + x + ", " + "Y offset: " + yDistance + "\n";
+
+            if(Math.Abs(x) > 5)
+            {
+                message += "Couch table is misplaced laterally!"
+            }
+
+            if (Math.Abs(yDistance) > 5)
+            {
+                message += "Couch table is misplaced vertically!"
+            }
+
+            ExternalPlanSetup plan = m_context.ExternalPlanSetup;
+            if (plan != null)
+            {
+                message += "No plan loaded!";
+                
+            }
+
+            PlanSum ps = m_context.PlanSum;
+            if(ps != null)
+            {
+                ps.PlanSetups.
+            }
+
+            // in case no plan or plan sum
+            message += "No plan loaded!";
+            //
+        }
   }
 }
