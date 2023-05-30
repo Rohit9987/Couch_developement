@@ -25,9 +25,12 @@ namespace VMS.TPS
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public void Execute(ScriptContext context /*, System.Windows.Window window, ScriptEnvironment environment*/)
+    public void Execute(ScriptContext context , System.Windows.Window window /*, ScriptEnvironment environment*/)
     {
-      // TODO : Add here the code that is called when the script is launched from Eclipse.
+            // TODO : Add here the code that is called when the script is launched from Eclipse.
+            couch_mover_design.couch_mover_UI ui = new couch_mover_design.couch_mover_UI();
+            window.Content = ui;
+            window.Height = 500; window.Width = 400;
     }
   }
 }
