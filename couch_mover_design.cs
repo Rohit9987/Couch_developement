@@ -36,6 +36,7 @@ namespace VMS.TPS
         window.Content = ui;
         window.Height = 500; window.Width = 400;
         m_context = context;
+        
 
         // enable buttons depending on the couch insertion/position
         enableButtons();
@@ -50,7 +51,7 @@ namespace VMS.TPS
         if(couchInterior==null ^ couchSurface==null)
         {
             MessageBox.Show("Error!\nOne of the couch structure is missing!");
-            // TODO: find a way to exit
+            // TODO: find a way to exit -    ask on reddit.
             return;
         }
 
@@ -61,7 +62,8 @@ namespace VMS.TPS
         }
 
         double distance = couchCoarseDistance();
-        if(distance*distance > 100)
+        ui.displayDistanceToMove(distance);
+        if (distance*distance > 100)
         {
             ui.enableShiftButton();
             return;
@@ -74,10 +76,86 @@ namespace VMS.TPS
     private static double couchCoarseDistance()
     {
         //TODO: find coarse distance to move
-        return 50;
+        //return 50;
+        int epoch = 0;
+
+        StructureSet ss = m_context.StructureSet;
+        int imagePlane = 20;
+        double[] CT_couch_profile = new double[100];
+
+        while (epoch++ < 10)
+        {
+            VVector[][] couchSurface_2D = couchSurface.GetContoursOnImagePlane(imagePlane);
+            VVector closestPoint = new VVector(0, 0, 0);
+
+            foreach (VVector vec1 in couchSurface_2D[0])     // 0, and 1 -  0 is outer and 1 is inner contour
+            {
+                if (closestPoint.y > vec1.y)
+                {
+                    closestPoint.y = vec1.y;
+                    closestPoint.z = vec1.z;
+                }
+            }
+
+            VVector farthestPoint = closestPoint;
+            farthestPoint.y += 150;
+
+            ss.Image.GetImageProfile(closestPoint, farthestPoint, CT_couch_profile);
+
+            findPeaks(CT_couch_profile);
+            double coarseDistance;
+            if(verifyPeaks(out coarseDistance)==1)
+            {
+                    epoch = 10;
+                    
+                    // TODO: move to fine measurement, store closest_point + distancetomove
+            }
+
+            return coarseDistance;
+        }
+
+
+        return 100;
+    }
+    private static List<int> peaks = new List<int>();
+    private static void findPeaks(double[] CT_couch_profile)
+    {
+        double previous = -1000;
+        for (int i = 0; i < CT_couch_profile.Length; i++)
+        {
+            if (i != 0)
+                previous = CT_couch_profile[i - 1];
+            if (CT_couch_profile[i] > -700)
+            {
+                if (CT_couch_profile[i] > previous)
+                {
+                    if (CT_couch_profile[i] > CT_couch_profile[i + 1])
+                    {
+                        peaks.Add(i);
+                    }
+                }
+            }
+        }
     }
 
-    private void couchCollisionCheck()
+    private static int verifyPeaks(out double coarseDistance)
+    {
+        int coarseDetection = 0;
+        coarseDistance = 0;
+        for (int i = 0; i < peaks.Count - 1; i++)
+        {
+            double difference = peaks.ElementAt(i + 1) - peaks.ElementAt(i);
+            if (difference > 8 && difference < 12)
+            {
+                coarseDetection++;
+                coarseDistance = peaks.ElementAt(i) * 1.5;
+            }
+        }
+        return coarseDetection;
+    }
+
+
+        private void couchCollisionCheck()
     {
         // TODO: check for distance
     }

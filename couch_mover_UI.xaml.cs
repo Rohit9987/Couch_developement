@@ -48,5 +48,10 @@ namespace couch_mover_design
             insertCouch_button.IsEnabled = false;
             shiftCouch_button.IsEnabled = false;
         }
+
+        internal void displayDistanceToMove(double coarseDistance)
+        {
+            distanceToMove_Label.Content = coarseDistance.ToString();
+        }
     }
 }

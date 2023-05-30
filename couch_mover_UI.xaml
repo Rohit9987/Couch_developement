@@ -17,7 +17,7 @@
         <Line X1="10" Y1="100" X2="390" Y2="100" StrokeThickness="4"/>
 
         <Label Content="Couch Shift" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,110,0,0" Width="120" Height="35" FontSize="16"/>
-        <Label Content="0" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="40,145,0,0" Width="100" Height="25"/>
+        <Label Content="0" Name="distanceToMove_Label" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="40,145,0,0" Width="100" Height="25"/>
         <Button Name="shiftCouch_button" Click="shiftCouch_button_Click" Content="Shift" HorizontalAlignment="Left" Margin="240,145,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
         <Line X1="10" Y1="200" X2="390" Y2="200" StrokeThickness="4"/>
 
