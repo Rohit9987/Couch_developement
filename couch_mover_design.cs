@@ -225,12 +225,12 @@ namespace VMS.TPS
 
             if(Math.Abs(x) > 5)
             {
-                message += "Couch table is misplaced laterally!"
+                message += "Couch table is misplaced laterally!";
             }
 
             if (Math.Abs(yDistance) > 5)
             {
-                message += "Couch table is misplaced vertically!"
+                message += "Couch table is misplaced vertically!";
             }
 
             ExternalPlanSetup plan = m_context.ExternalPlanSetup;
