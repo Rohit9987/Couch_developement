@@ -25,10 +25,28 @@ namespace couch_mover_design
             InitializeComponent();
         }
 
-        private void addCouch_button_Click(object sender, RoutedEventArgs e) { }
+        private void insertCouch_button_Click(object sender, RoutedEventArgs e) { }
 
         private void shiftCouch_button_Click(object sender, RoutedEventArgs e) { }
 
         private void acquireCSV_button_Click(object sender, RoutedEventArgs e) { }
+
+        internal void enableInsertButton()
+        {
+            shiftCouch_button.IsEnabled = false;
+            acquireCSV_button.IsEnabled = false;
+        }
+
+        internal void enableShiftButton()
+        {
+            insertCouch_button.IsEnabled = false;
+            acquireCSV_button.IsEnabled = false;
+        }
+
+        internal void enableAcquireButton()
+        {
+            insertCouch_button.IsEnabled = false;
+            shiftCouch_button.IsEnabled = false;
+        }
     }
 }

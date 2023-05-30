@@ -13,7 +13,7 @@
             <ComboBoxItem Content="Medium"/>
             <ComboBoxItem Content="Thin"/>
         </ComboBox>
-        <Button Name="addCouch_button" Click="addCouch_button_Click" Content="Insert" HorizontalAlignment="Left" Margin="240,45,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
+        <Button Name="insertCouch_button" Click="insertCouch_button_Click" Content="Insert" HorizontalAlignment="Left" Margin="240,45,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
         <Line X1="10" Y1="100" X2="390" Y2="100" StrokeThickness="4"/>
 
         <Label Content="Couch Shift" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,110,0,0" Width="120" Height="35" FontSize="16"/>
