@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using VMS.TPS;
 
 namespace couch_mover_design
 {
@@ -26,9 +27,16 @@ namespace couch_mover_design
             Couch_ComboBox.SelectedIndex = 1;
         }
 
-        private void insertCouch_button_Click(object sender, RoutedEventArgs e) { }
+        private void insertCouch_button_Click(object sender, RoutedEventArgs e)
+        {
+            VMS.TPS.Script.insertCouch(Couch_ComboBox.SelectedIndex);
+        }
 
-        private void shiftCouch_button_Click(object sender, RoutedEventArgs e) { }
+        private void shiftCouch_button_Click(object sender, RoutedEventArgs e)
+        {
+
+            VMS.TPS.Script.moveCouch(double.Parse(distanceToMove_Label.Content.ToString()));
+        }
 
         private void acquireCSV_button_Click(object sender, RoutedEventArgs e) { }
 

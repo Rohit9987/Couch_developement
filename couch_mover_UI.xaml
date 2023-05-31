@@ -9,9 +9,9 @@
     <Grid>
         <Label Content="Check Insertion" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,10,0,0" Width="120" Height="35" FontSize="16"/>
         <ComboBox Name="Couch_ComboBox"  HorizontalAlignment="Left" Margin="40,45,0,0" VerticalAlignment="Top" Width="120" Height="25">
-            <ComboBoxItem Content="Thick"/>
-            <ComboBoxItem Content="Medium"/>
             <ComboBoxItem Content="Thin"/>
+            <ComboBoxItem Content="Medium"/>
+            <ComboBoxItem Content="Thick"/>
         </ComboBox>
         <Button Name="insertCouch_button" Click="insertCouch_button_Click" Content="Insert" HorizontalAlignment="Left" Margin="240,45,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
         <Line X1="10" Y1="100" X2="390" Y2="100" StrokeThickness="4"/>

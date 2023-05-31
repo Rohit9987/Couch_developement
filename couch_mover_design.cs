@@ -47,8 +47,7 @@ namespace VMS.TPS
     }
 
     /*****************************ENABLE BUTTONS ON THE UI*****************************************/
-
-    private void enableButtons()
+    private static void enableButtons()
     {
         StructureSet ss = m_context.StructureSet;
         couchSurface = ss.Structures.FirstOrDefault(id => id.Id.Contains("CouchSurface"));
@@ -78,7 +77,32 @@ namespace VMS.TPS
         ui.enableAcquireButton();
         couchCollisionCheck(distance);
     }
-    
+
+    /*****************************INSERT COUCH STRUCTURE*****************************************/
+    internal static void insertCouch(int couchType)
+    {
+        string couchName = "Exact_IGRT_Couch_Top_thin";
+        if (couchType == 1)
+            couchName = "Exact_IGRT_Couch_Top_medium";
+        else if (couchType == 2)
+            couchName = "Exact_IGRT_Couch_Top_thick";
+
+        bool inserted = false, resized = false;
+        IReadOnlyList<Structure> couch;
+        string errormessage;
+        inserted = m_context.StructureSet.AddCouchStructures(couchName,
+                                m_context.Image.ImagingOrientation,
+                                RailPosition.In,
+                                RailPosition.Out,
+                                null, null, null,
+                                out couch,
+                                out resized,
+                                out errormessage);
+
+        enableButtons();
+    }
+
+
     /*****************************COUCH COARSE DISTANCE CALCULATOR*****************************************/
     private static double couchCoarseDistance()
     {
@@ -124,6 +148,7 @@ namespace VMS.TPS
         }
         return -100;
     }
+
     private static List<int> peaks = new List<int>();
     private static void findPeaks(double[] CT_couch_profile)
     {
@@ -162,7 +187,6 @@ namespace VMS.TPS
     }
 
     /*****************************COUCH FINE DISTANCE CALCULATOR*****************************************/
-
     private static double measureFine(VVector initialPoint, double coarseDistance)
     {
         
@@ -217,9 +241,10 @@ namespace VMS.TPS
     }
 
     /*****************************COUCH MOVE FUNCTIONS*****************************************/
-    public void moveCouchsurface(double shift)
+    internal static void moveCouch(double shift)
     {
-        //m_context.Patient.BeginModifications(); may be put it in the main file.
+        if(m_context.Patient.CanModifyData() == false)          // check this.
+            m_context.Patient.BeginModifications();             // may be put it in the main file.
        
         Structure couchSurface = m_context.StructureSet.Structures.FirstOrDefault(id => id.Id.Contains("CouchSurface"));
         Structure couchInterior = m_context.StructureSet.Structures.FirstOrDefault(id => id.Id.Contains("CouchInterior"));
@@ -261,8 +286,7 @@ namespace VMS.TPS
     }
 
     /*****************************COUCH COLLISION DETECTOR*****************************************/
-
-    private void couchCollisionCheck(double yDistance)
+    private static void couchCollisionCheck(double yDistance)
     {
         double x = couchInterior.CenterPoint.x;
         string message = "";
