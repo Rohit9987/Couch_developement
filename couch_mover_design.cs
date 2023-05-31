@@ -216,10 +216,67 @@ namespace VMS.TPS
         return loss / 10;
     }
 
+    /*****************************COUCH MOVE FUNCTIONS*****************************************/
+    public void moveCouchsurface()
+    {
+
+        double shift = 30;
+        Structure couchSurface = m_context.StructureSet.Structures.FirstOrDefault(id => id.Id.Contains("CouchSurface"));
+        
+        int nPlanes = m_context.Image.ZSize;
+
+        int j = 0, k = 0;
+        string message = "";
+
+        for (int i = 0; i < nPlanes; i++)
+        {
+            VVector[][] couchSurface_2D = couchSurface.GetContoursOnImagePlane(i);
+
+            if (couchSurface_2D != null && couchSurface_2D.Length > 0)
+            {
+                VVector[] outer_2D = couchSurface_2D[0];
+                VVector[] inner_2D = couchSurface_2D[1];
+
+                VVector[] new_outer_2D = new VVector[outer_2D.Length];
+                VVector[] new_inner_2D = new VVector[inner_2D.Length];
+
+                foreach (VVector pt in outer_2D)
+                {
+                    var coordx = pt.x;
+                    var coordy = pt.y + shift;
+                    var coordz = pt.z;
+                    new_outer_2D[j++] = new VVector(coordx, coordy, coordz);
+                }
+                //j = 0;
+
+                foreach (VVector pt in inner_2D)
+                {
+                    var coordx = pt.x;
+                    var coordy = pt.y + shift;
+                    var coordz = pt.z;
+
+                    new_inner_2D[k++] = new VVector(coordx, coordy, coordz);
+                }
+
+                couchSurface.ClearAllContoursOnImagePlane(i);
+                couchSurface.AddContourOnImagePlane(new_outer_2D, i);
+                couchSurface.SubtractContourOnImagePlane(new_inner_2D, i);
+
+                int difference = outer_2D.Length - inner_2D.Length;
+                message += difference + "\n";
+
+                j = 0;
+                k = 0;
+            }
+        }
+
+        MessageBox.Show(message);
+    }
+
     /*****************************COUCH COLLISION DETECTOR*****************************************/
 
     private void couchCollisionCheck(double yDistance)
-{
+    {
         double x = couchInterior.CenterPoint.x;
         string message = "";
         message += "X offset: " + Math.Round(x, 2) + ", " + "Y offset: " + yDistance + "\n";
