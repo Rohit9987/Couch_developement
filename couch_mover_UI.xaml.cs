@@ -54,5 +54,10 @@ namespace couch_mover_design
         {
             distanceToMove_Label.Content = coarseDistance.ToString();
         }
+
+        internal void updateCollisionMessage(string message)
+        {
+            collision_textBlock.Text = message;
+        }
     }
 }

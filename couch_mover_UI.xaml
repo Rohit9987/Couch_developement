@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:couch_mover_design"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="400">
+             d:DesignHeight="700" d:DesignWidth="400">
     <Grid>
         <Label Content="Check Insertion" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,10,0,0" Width="120" Height="35" FontSize="16"/>
         <ComboBox Name="Couch_ComboBox"  HorizontalAlignment="Left" Margin="40,45,0,0" VerticalAlignment="Top" Width="120" Height="25">
@@ -21,12 +21,12 @@
         <Button Name="shiftCouch_button" Click="shiftCouch_button_Click" Content="Shift" HorizontalAlignment="Left" Margin="240,145,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
         <Line X1="10" Y1="200" X2="390" Y2="200" StrokeThickness="4"/>
 
-        <Label Content="Couch Collision Check" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="40,210,0,0" Width="200" Height="35" FontSize="16"/>
-        <TextBlock Name="collision_textBlock" Width="300" Height="100" Margin="00,245,0,0" VerticalAlignment="Top" Text="********"/>
-        <Line X1="10" Y1="350" X2="390" Y2="350" StrokeThickness="4"/>
+        <Label Content="Couch Collision Check" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,210,0,0" Width="200" Height="35" FontSize="16"/>
+        <TextBlock Name="collision_textBlock" Width="340" Height="250" Margin="30,245,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Text="********"/>
+        <Line X1="10" Y1="520" X2="390" Y2="520" StrokeThickness="4"/>
 
-        <Label Content="Acquire line profile below couch to CSV" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="40,360,0,0" Width="300" Height="35" FontSize="16"/>
-        <Button Name="acquireCSV_button" Click="acquireCSV_button_Click" Content="Acquire" HorizontalAlignment="Left" Margin="40,400,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
+        <Label Content="Acquire line profile below couch to CSV" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,535,0,0" Width="300" Height="35" FontSize="16"/>
+        <Button Name="acquireCSV_button" Click="acquireCSV_button_Click" Content="Acquire" HorizontalAlignment="Left" Margin="40,575,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
         <Line X1="10" Y1="450" X2="390" Y2="450" StrokeThickness="4"/>
 
     </Grid>

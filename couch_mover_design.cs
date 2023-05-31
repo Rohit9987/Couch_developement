@@ -34,7 +34,8 @@ namespace VMS.TPS
         // TODO : Add here the code that is called when the script is launched from Eclipse.
         ui = new couch_mover_design.couch_mover_UI();
         window.Content = ui;
-        window.Height = 500; window.Width = 400;
+        window.Height = 700; window.Width = 400;
+        window.Title = "LotusMoon";
         m_context = context;
 
         if (m_context == null)
@@ -113,7 +114,6 @@ namespace VMS.TPS
             if(verifyPeaks(out coarseDistance)==1)
             {
                     epoch = 10;
-                    MessageBox.Show("Coarse: " + coarseDistance);
                     peaks.Clear();
                     return Math.Round(measureFine(closestPoint, coarseDistance), 2);
             }
@@ -165,14 +165,14 @@ namespace VMS.TPS
 
     private static double measureFine(VVector initialPoint, double coarseDistance)
     {
-
+        
         VVector point1 = initialPoint;
         point1.y += coarseDistance;
         VVector finalPoint = point1;
         
         int epoch = 0;
         const double stepSize = 0.1;
-        double loss = 1000000;
+        double loss = 10000000;
         double[] CT_couch_profile_fine = new double[10];
 
         while(epoch++ < 10)
@@ -191,15 +191,16 @@ namespace VMS.TPS
             double epochLoss2 = lossFunction(CT_couch_profile_fine);
             double gradient = (epochLoss2 - epochLoss) / stepSize;
 
-            double deltaY = -1.0 / (300) * stepSize * gradient;                    // TODO: improve this formula 
-
-            if(epochLoss < loss)
+            double deltaY = -1.0 / (500*(epoch+1)) * stepSize * gradient;                    // TODO: improve this formula 
+            //MessageBox.Show("Delta: " + deltaY + "\nLoss:" + epochLoss);
+            if (epochLoss < loss)
             {
                 loss = epochLoss;
                 finalPoint = point1;
             }
             point1.y += deltaY;
         }
+            
         return finalPoint.y - initialPoint.y;
     }
 
@@ -217,38 +218,122 @@ namespace VMS.TPS
 
     /*****************************COUCH COLLISION DETECTOR*****************************************/
 
-        private void couchCollisionCheck(double yDistance)
-    {
-            double x = couchInterior.CenterPoint.x;
-            string message = "";
-            message += "X offset: " + x + ", " + "Y offset: " + yDistance + "\n";
+    private void couchCollisionCheck(double yDistance)
+{
+        double x = couchInterior.CenterPoint.x;
+        string message = "";
+        message += "X offset: " + Math.Round(x, 2) + ", " + "Y offset: " + yDistance + "\n";
 
-            if(Math.Abs(x) > 5)
-            {
-                message += "Couch table is misplaced laterally!";
-            }
-
-            if (Math.Abs(yDistance) > 5)
-            {
-                message += "Couch table is misplaced vertically!";
-            }
-
-            ExternalPlanSetup plan = m_context.ExternalPlanSetup;
-            if (plan != null)
-            {
-                message += "No plan loaded!";
-                
-            }
-
-            PlanSum ps = m_context.PlanSum;
-            if(ps != null)
-            {
-                ps.PlanSetups.
-            }
-
-            // in case no plan or plan sum
-            message += "No plan loaded!";
-            //
+        if(Math.Abs(x) > 5)
+        {
+            message += "Couch table is misplaced laterally!";
         }
+
+        if (Math.Abs(yDistance) > 5)
+        {
+            message += "Couch table is misplaced vertically!";
+        }
+
+        ExternalPlanSetup plan = m_context.ExternalPlanSetup;
+        PlanSum ps = m_context.PlanSum;
+        if (plan != null)
+        {
+                message += verifyCollisionForPlan(plan);               
+        }
+        else if(ps != null)
+        {                
+            foreach (var plan1 in ps.PlanSetups)
+            {
+                message += "PLAN: " + plan1.Id + "\n";
+                message += verifyCollisionForPlan((ExternalPlanSetup) plan1);
+            }
+        }
+        else
+        {
+            // in case no plan or plan sum
+            message += "No plan or plan sum loaded!";
+        }
+        
+        ui.updateCollisionMessage(message);
+    }
+    
+    private static string verifyCollisionForPlan(ExternalPlanSetup plan)
+    {
+        VVector isocenter = plan.Beams.First().IsocenterPosition;
+        VVector[][] couchSurface_2D = couchSurface.GetContoursOnImagePlane(20);
+        double maxDistanceLeft=0, maxDistanceRight = 0;
+        string outputMessage = "";
+        int collisionRight = 0, collisionLeft = 0;
+
+        foreach (VVector vec1 in couchSurface_2D[0])
+        {
+            double distance = (isocenter.x - vec1.x) * (isocenter.x - vec1.x) + (isocenter.y - vec1.y) * (isocenter.y - vec1.y);
+            distance = Math.Sqrt(distance);
+
+            // for collision check
+            if (vec1.x > 0 && distance > maxDistanceRight)
+                maxDistanceRight = distance;
+            if (vec1.x < 0 && distance > maxDistanceLeft)
+                maxDistanceLeft = distance;            
+        }
+        outputMessage += "Max distance left: " + Math.Round(maxDistanceLeft, 2).ToString() + "\n";
+        outputMessage += "Max distance right: " + Math.Round(maxDistanceRight, 2).ToString() + "\n";
+
+            foreach (Beam beam in plan.Beams)
+        {
+            ControlPointCollection cp = beam.ControlPoints;
+            foreach (ControlPoint cp1 in cp)
+            {
+                if (cp1.GantryAngle > 100 && cp1.GantryAngle < 180)
+                {
+                    if (maxDistanceRight > 350)
+                    {
+                        collisionRight = 2;
+                    }
+                    else if (maxDistanceRight > 335)
+                    {
+                        collisionRight = 1;
+                    }
+                }
+                else if (cp1.GantryAngle > 180 && cp1.GantryAngle < 260)
+                {
+                    if (maxDistanceLeft > 350)
+                    {
+                        collisionLeft = 2;
+                    }
+                    else if (maxDistanceRight > 335)
+                    {
+                        collisionLeft = 1;
+                    }
+                }
+            }
+        }
+
+        if(collisionLeft == 1)
+        {
+            outputMessage += "Warning! Possible collision on left side!\n";
+        }
+        else if(collisionLeft == 2)
+        {
+            outputMessage += "Error! Collision on left side!\n";
+        }
+
+        if (collisionRight == 1)
+        {
+            outputMessage += "Warning! Possible collision on right side!\n";
+        }
+        else if (collisionRight == 2)
+        {
+            outputMessage += "Error! Collision on right side!\n";
+        }
+
+        if (collisionLeft == 0 && collisionRight == 0)
+        {
+            outputMessage += "Clear! No collision detected!\n";
+        }
+
+        return outputMessage;
+    }
+
   }
 }
