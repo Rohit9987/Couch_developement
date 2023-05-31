@@ -217,12 +217,13 @@ namespace VMS.TPS
     }
 
     /*****************************COUCH MOVE FUNCTIONS*****************************************/
-    public void moveCouchsurface()
+    public void moveCouchsurface(double shift)
     {
-
-        double shift = 30;
+        //m_context.Patient.BeginModifications(); may be put it in the main file.
+       
         Structure couchSurface = m_context.StructureSet.Structures.FirstOrDefault(id => id.Id.Contains("CouchSurface"));
-        
+        Structure couchInterior = m_context.StructureSet.Structures.FirstOrDefault(id => id.Id.Contains("CouchInterior"));
+
         int nPlanes = m_context.Image.ZSize;
 
         for (int i = 0; i < nPlanes; i++)
@@ -253,6 +254,8 @@ namespace VMS.TPS
                 couchSurface.AddContourOnImagePlane(new_outer_2D, i);
                 couchSurface.SubtractContourOnImagePlane(new_inner_2D, i);
 
+                couchInterior.ClearAllContoursOnImagePlane(i);
+                couchInterior.AddContourOnImagePlane(new_inner_2D, i);
             }
         }
     }
