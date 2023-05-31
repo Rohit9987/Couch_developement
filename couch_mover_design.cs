@@ -9,12 +9,12 @@ using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 
 // TODO: Replace the following version attributes by creating AssemblyInfo.cs. You can do this in the properties of the Visual Studio project.
-[assembly: AssemblyVersion("1.0.0.1")]
+[assembly: AssemblyVersion("1.0.0.2")]
 [assembly: AssemblyFileVersion("1.0.0.1")]
 [assembly: AssemblyInformationalVersion("1.0")]
 
 // TODO: Uncomment the following line if the script requires write access.
-// [assembly: ESAPIScript(IsWriteable = true)]
+ [assembly: ESAPIScript(IsWriteable = true)]
 
 namespace VMS.TPS
 {
@@ -44,6 +44,9 @@ namespace VMS.TPS
 
         // enable buttons depending on the couch insertion/position
         enableButtons();
+    
+        m_context.Patient.BeginModifications();             // may be put it in the main file.
+       
     }
 
     /*****************************ENABLE BUTTONS ON THE UI*****************************************/
@@ -243,9 +246,6 @@ namespace VMS.TPS
     /*****************************COUCH MOVE FUNCTIONS*****************************************/
     internal static void moveCouch(double shift)
     {
-        if(m_context.Patient.CanModifyData() == false)          // check this.
-            m_context.Patient.BeginModifications();             // may be put it in the main file.
-       
         Structure couchSurface = m_context.StructureSet.Structures.FirstOrDefault(id => id.Id.Contains("CouchSurface"));
         Structure couchInterior = m_context.StructureSet.Structures.FirstOrDefault(id => id.Id.Contains("CouchInterior"));
 
@@ -283,6 +283,7 @@ namespace VMS.TPS
                 couchInterior.AddContourOnImagePlane(new_inner_2D, i);
             }
         }
+            enableButtons();
     }
 
     /*****************************COUCH COLLISION DETECTOR*****************************************/
