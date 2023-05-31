@@ -225,9 +225,6 @@ namespace VMS.TPS
         
         int nPlanes = m_context.Image.ZSize;
 
-        int j = 0, k = 0;
-        string message = "";
-
         for (int i = 0; i < nPlanes; i++)
         {
             VVector[][] couchSurface_2D = couchSurface.GetContoursOnImagePlane(i);
@@ -240,37 +237,24 @@ namespace VMS.TPS
                 VVector[] new_outer_2D = new VVector[outer_2D.Length];
                 VVector[] new_inner_2D = new VVector[inner_2D.Length];
 
-                foreach (VVector pt in outer_2D)
+                for (int l = 0; l < outer_2D.Length; l++)
                 {
-                    var coordx = pt.x;
-                    var coordy = pt.y + shift;
-                    var coordz = pt.z;
-                    new_outer_2D[j++] = new VVector(coordx, coordy, coordz);
-                }
-                //j = 0;
+                    double newcoordy = outer_2D[l].y + shift;
+                    new_outer_2D[l] = new VVector(outer_2D[l].x, newcoordy, 0);
 
-                foreach (VVector pt in inner_2D)
-                {
-                    var coordx = pt.x;
-                    var coordy = pt.y + shift;
-                    var coordz = pt.z;
-
-                    new_inner_2D[k++] = new VVector(coordx, coordy, coordz);
+                    if (l < inner_2D.Length)
+                    {
+                        newcoordy = inner_2D[l].y + shift;
+                        new_inner_2D[l] = new VVector(inner_2D[l].x, newcoordy, 0);
+                    }
                 }
 
                 couchSurface.ClearAllContoursOnImagePlane(i);
                 couchSurface.AddContourOnImagePlane(new_outer_2D, i);
                 couchSurface.SubtractContourOnImagePlane(new_inner_2D, i);
 
-                int difference = outer_2D.Length - inner_2D.Length;
-                message += difference + "\n";
-
-                j = 0;
-                k = 0;
             }
         }
-
-        MessageBox.Show(message);
     }
 
     /*****************************COUCH COLLISION DETECTOR*****************************************/
