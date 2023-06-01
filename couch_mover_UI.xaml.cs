@@ -44,18 +44,22 @@ namespace couch_mover_design
         {
             shiftCouch_button.IsEnabled = false;
             acquireCSV_button.IsEnabled = false;
+            insertCouch_button.IsEnabled = true;
         }
 
         internal void enableShiftButton()
         {
             insertCouch_button.IsEnabled = false;
             acquireCSV_button.IsEnabled = false;
+            shiftCouch_button.IsEnabled = true;
+            
         }
 
         internal void enableAcquireButton()
         {
             insertCouch_button.IsEnabled = false;
             shiftCouch_button.IsEnabled = false;
+            acquireCSV_button.IsEnabled = true;
         }
 
         internal void displayDistanceToMove(double coarseDistance)

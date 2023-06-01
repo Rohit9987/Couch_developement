@@ -9,7 +9,7 @@ using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 
 // TODO: Replace the following version attributes by creating AssemblyInfo.cs. You can do this in the properties of the Visual Studio project.
-[assembly: AssemblyVersion("1.0.0.2")]
+[assembly: AssemblyVersion("1.0.0.4")]
 [assembly: AssemblyFileVersion("1.0.0.1")]
 [assembly: AssemblyInformationalVersion("1.0")]
 
@@ -76,7 +76,6 @@ namespace VMS.TPS
             ui.enableShiftButton();
             return;
         }
-
         ui.enableAcquireButton();
         couchCollisionCheck(distance);
     }
@@ -246,8 +245,14 @@ namespace VMS.TPS
     /*****************************COUCH MOVE FUNCTIONS*****************************************/
     internal static void moveCouch(double shift)
     {
+        if (shift == 0 || shift == -100)
+            return;
+
         Structure couchSurface = m_context.StructureSet.Structures.FirstOrDefault(id => id.Id.Contains("CouchSurface"));
         Structure couchInterior = m_context.StructureSet.Structures.FirstOrDefault(id => id.Id.Contains("CouchInterior"));
+
+        if (couchSurface == null || couchInterior == null)
+            return;
 
         int nPlanes = m_context.Image.ZSize;
 
@@ -283,7 +288,7 @@ namespace VMS.TPS
                 couchInterior.AddContourOnImagePlane(new_inner_2D, i);
             }
         }
-            enableButtons();
+        enableButtons();
     }
 
     /*****************************COUCH COLLISION DETECTOR*****************************************/
