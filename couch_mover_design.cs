@@ -9,7 +9,7 @@ using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 
 // TODO: Replace the following version attributes by creating AssemblyInfo.cs. You can do this in the properties of the Visual Studio project.
-[assembly: AssemblyVersion("1.0.0.4")]
+[assembly: AssemblyVersion("1.0.0.10")]
 [assembly: AssemblyFileVersion("1.0.0.1")]
 [assembly: AssemblyInformationalVersion("1.0")]
 
@@ -34,7 +34,7 @@ namespace VMS.TPS
         // TODO : Add here the code that is called when the script is launched from Eclipse.
         ui = new couch_mover_design.couch_mover_UI();
         window.Content = ui;
-        window.Height = 700; window.Width = 400;
+        window.Height = 600; window.Width = 400;
         window.Title = "LotusMoon";
         m_context = context;
 
@@ -49,7 +49,7 @@ namespace VMS.TPS
        
     }
 
-    /*****************************ENABLE BUTTONS ON THE UI*****************************************/
+    /*****************************ENABLE BUTTONS ON THE UI***********************************************/
     private static void enableButtons()
     {
         StructureSet ss = m_context.StructureSet;
@@ -80,7 +80,7 @@ namespace VMS.TPS
         couchCollisionCheck(distance);
     }
 
-    /*****************************INSERT COUCH STRUCTURE*****************************************/
+    /*****************************INSERT COUCH STRUCTURE*************************************************/
     internal static void insertCouch(int couchType)
     {
         string couchName = "Exact_IGRT_Couch_Top_thin";
@@ -105,7 +105,7 @@ namespace VMS.TPS
     }
 
 
-    /*****************************COUCH COARSE DISTANCE CALCULATOR*****************************************/
+    /*****************************COUCH COARSE DISTANCE CALCULATOR***************************************/
     private static double couchCoarseDistance()
     {
         //TODO: find coarse distance to move
@@ -242,9 +242,12 @@ namespace VMS.TPS
         return loss / 10;
     }
 
-    /*****************************COUCH MOVE FUNCTIONS*****************************************/
-    internal static void moveCouch(double shift)
+        /*****************************COUCH MOVE FUNCTIONS***************************************************/
+
+internal static async void moveCouch(double shift)
     {
+        double offset = 2;
+        shift -= offset;
         if (shift == 0 || shift == -100)
             return;
 
@@ -254,32 +257,32 @@ namespace VMS.TPS
         if (couchSurface == null || couchInterior == null)
             return;
 
-        int nPlanes = m_context.Image.ZSize;
+        
+        VVector[][] couchSurface_2D_ = couchSurface.GetContoursOnImagePlane(20);
+        VVector[] outer_2D = couchSurface_2D_[0];
+        VVector[] inner_2D = couchSurface_2D_[1];
 
+        VVector[] new_outer_2D = new VVector[outer_2D.Length];
+        VVector[] new_inner_2D = new VVector[inner_2D.Length];
+
+        for (int l = 0; l < outer_2D.Length; l++)
+        {
+            double newcoordy = outer_2D[l].y + shift;
+            new_outer_2D[l] = new VVector(outer_2D[l].x, newcoordy, 0);
+
+            if (l < inner_2D.Length)
+            {
+                newcoordy = inner_2D[l].y + shift;
+                new_inner_2D[l] = new VVector(inner_2D[l].x, newcoordy, 0);
+            }
+        }
+        
+        int nPlanes = m_context.Image.ZSize;
         for (int i = 0; i < nPlanes; i++)
         {
             VVector[][] couchSurface_2D = couchSurface.GetContoursOnImagePlane(i);
-
             if (couchSurface_2D != null && couchSurface_2D.Length > 0)
             {
-                VVector[] outer_2D = couchSurface_2D[0];
-                VVector[] inner_2D = couchSurface_2D[1];
-
-                VVector[] new_outer_2D = new VVector[outer_2D.Length];
-                VVector[] new_inner_2D = new VVector[inner_2D.Length];
-
-                for (int l = 0; l < outer_2D.Length; l++)
-                {
-                    double newcoordy = outer_2D[l].y + shift;
-                    new_outer_2D[l] = new VVector(outer_2D[l].x, newcoordy, 0);
-
-                    if (l < inner_2D.Length)
-                    {
-                        newcoordy = inner_2D[l].y + shift;
-                        new_inner_2D[l] = new VVector(inner_2D[l].x, newcoordy, 0);
-                    }
-                }
-
                 couchSurface.ClearAllContoursOnImagePlane(i);
                 couchSurface.AddContourOnImagePlane(new_outer_2D, i);
                 couchSurface.SubtractContourOnImagePlane(new_inner_2D, i);
@@ -287,11 +290,12 @@ namespace VMS.TPS
                 couchInterior.ClearAllContoursOnImagePlane(i);
                 couchInterior.AddContourOnImagePlane(new_inner_2D, i);
             }
+            ui.updateShiftButtonLabel(i + "/" + nPlanes);
         }
         enableButtons();
     }
 
-    /*****************************COUCH COLLISION DETECTOR*****************************************/
+    /*****************************COUCH COLLISION DETECTOR***********************************************/
     private static void couchCollisionCheck(double yDistance)
     {
         double x = couchInterior.CenterPoint.x;
@@ -408,6 +412,5 @@ namespace VMS.TPS
 
         return outputMessage;
     }
-
   }
 }

@@ -34,8 +34,9 @@ namespace couch_mover_design
 
         private void shiftCouch_button_Click(object sender, RoutedEventArgs e)
         {
-
+            updateShiftButtonLabel();
             VMS.TPS.Script.moveCouch(double.Parse(distanceToMove_Label.Content.ToString()));
+            
         }
 
         private void acquireCSV_button_Click(object sender, RoutedEventArgs e) { }
@@ -43,14 +44,12 @@ namespace couch_mover_design
         internal void enableInsertButton()
         {
             shiftCouch_button.IsEnabled = false;
-            acquireCSV_button.IsEnabled = false;
             insertCouch_button.IsEnabled = true;
         }
 
         internal void enableShiftButton()
         {
             insertCouch_button.IsEnabled = false;
-            acquireCSV_button.IsEnabled = false;
             shiftCouch_button.IsEnabled = true;
             
         }
@@ -59,7 +58,6 @@ namespace couch_mover_design
         {
             insertCouch_button.IsEnabled = false;
             shiftCouch_button.IsEnabled = false;
-            acquireCSV_button.IsEnabled = true;
         }
 
         internal void displayDistanceToMove(double coarseDistance)
@@ -70,6 +68,11 @@ namespace couch_mover_design
         internal void updateCollisionMessage(string message)
         {
             collision_textBlock.Text = message;
+        }
+
+        internal void updateShiftButtonLabel(string label="Please wait")
+        {
+            shiftCouch_button.Content = label;
         }
     }
 }
