@@ -55,7 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="couch_mover_design.cs" />
+    <Compile Include="IGRT_Couch_Shifter.cs" />
     <Compile Include="couch_mover_UI.xaml.cs">
       <DependentUpon>couch_mover_UI.xaml</DependentUpon>
     </Compile>

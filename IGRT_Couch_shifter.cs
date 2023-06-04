@@ -9,7 +9,7 @@ using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 
 // TODO: Replace the following version attributes by creating AssemblyInfo.cs. You can do this in the properties of the Visual Studio project.
-[assembly: AssemblyVersion("1.0.0.11")]
+[assembly: AssemblyVersion("1.0.0.12")]
 [assembly: AssemblyFileVersion("1.0.0.1")]
 [assembly: AssemblyInformationalVersion("1.0")]
 
@@ -35,7 +35,7 @@ namespace VMS.TPS
         ui = new couch_mover_design.couch_mover_UI();
         window.Content = ui;
         window.Height = 600; window.Width = 400;
-        window.Title = "LotusMoon";
+        window.Title = "IGRT_Couch_Shifter";
         m_context = context;
 
         if (m_context == null)
