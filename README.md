@@ -1,6 +1,6 @@
 # IGRT_Couch_Shifter
 
-This is a script for inserting and automatically shifting Varian IGRT couch structure on ECLIPSE treatment planning system. Additionally, the UI shows if there is gantry clearance for coplanar beams in the loaded plan. The script is developed using the Eclipse Scripting API for research purposes.
+This is a script for inserting and automatically shifting Varian IGRT couch structure on ECLIPSE treatment planning system. Additionally, the UI will display if there is gantry clearance for coplanar beams in the loaded plan. The script is developed using the Eclipse Scripting API for research purposes.
 
 
 ## Requirements
@@ -26,7 +26,7 @@ This is a script for inserting and automatically shifting Varian IGRT couch stru
 
 - Insert thin, medium and thick Varian IGRT couch structures.
 - Calculate the distance to move the couch to the Varian couch top on CT scan (a bit slow at the moment).
-- Detect collisions between the couch and treatment plans.
+- Detect collisions between the couch and coplanar beams in the treatment plan.
 - Provide warnings and errors for possible collisions.
 - Update the UI dynamically based on the couch position and operations.
 
