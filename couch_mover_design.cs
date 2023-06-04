@@ -9,7 +9,7 @@ using VMS.TPS.Common.Model.API;
 using VMS.TPS.Common.Model.Types;
 
 // TODO: Replace the following version attributes by creating AssemblyInfo.cs. You can do this in the properties of the Visual Studio project.
-[assembly: AssemblyVersion("1.0.0.10")]
+[assembly: AssemblyVersion("1.0.0.11")]
 [assembly: AssemblyFileVersion("1.0.0.1")]
 [assembly: AssemblyInformationalVersion("1.0")]
 
@@ -76,7 +76,6 @@ namespace VMS.TPS
             ui.enableShiftButton();
             return;
         }
-        ui.enableAcquireButton();
         couchCollisionCheck(distance);
     }
 
@@ -141,7 +140,7 @@ namespace VMS.TPS
             {
                     epoch = 10;
                     peaks.Clear();
-                    return Math.Round(measureFine(closestPoint, coarseDistance), 2);
+                    return Math.Round(measureFine(closestPoint, coarseDistance), 2) - 2;        // 2 mm offset.
             }
             else
             {
@@ -244,10 +243,8 @@ namespace VMS.TPS
 
         /*****************************COUCH MOVE FUNCTIONS***************************************************/
 
-internal static async void moveCouch(double shift)
+internal static void moveCouch(double shift)
     {
-        double offset = 2;
-        shift -= offset;
         if (shift == 0 || shift == -100)
             return;
 
@@ -280,17 +277,13 @@ internal static async void moveCouch(double shift)
         int nPlanes = m_context.Image.ZSize;
         for (int i = 0; i < nPlanes; i++)
         {
-            VVector[][] couchSurface_2D = couchSurface.GetContoursOnImagePlane(i);
-            if (couchSurface_2D != null && couchSurface_2D.Length > 0)
-            {
-                couchSurface.ClearAllContoursOnImagePlane(i);
-                couchSurface.AddContourOnImagePlane(new_outer_2D, i);
-                couchSurface.SubtractContourOnImagePlane(new_inner_2D, i);
+            couchSurface.ClearAllContoursOnImagePlane(i);
+            couchSurface.AddContourOnImagePlane(new_outer_2D, i);
+            couchSurface.SubtractContourOnImagePlane(new_inner_2D, i);
 
-                couchInterior.ClearAllContoursOnImagePlane(i);
-                couchInterior.AddContourOnImagePlane(new_inner_2D, i);
-            }
-            ui.updateShiftButtonLabel(i + "/" + nPlanes);
+            couchInterior.ClearAllContoursOnImagePlane(i);
+            couchInterior.AddContourOnImagePlane(new_inner_2D, i);
+
         }
         enableButtons();
     }

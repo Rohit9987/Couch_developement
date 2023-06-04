@@ -35,8 +35,7 @@ namespace couch_mover_design
         private void shiftCouch_button_Click(object sender, RoutedEventArgs e)
         {
             updateShiftButtonLabel();
-            VMS.TPS.Script.moveCouch(double.Parse(distanceToMove_Label.Content.ToString()));
-            
+            VMS.TPS.Script.moveCouch(double.Parse(distanceToMove_Label.Content.ToString()));            
         }
 
         private void acquireCSV_button_Click(object sender, RoutedEventArgs e) { }
@@ -52,12 +51,6 @@ namespace couch_mover_design
             insertCouch_button.IsEnabled = false;
             shiftCouch_button.IsEnabled = true;
             
-        }
-
-        internal void enableAcquireButton()
-        {
-            insertCouch_button.IsEnabled = false;
-            shiftCouch_button.IsEnabled = false;
         }
 
         internal void displayDistanceToMove(double coarseDistance)
